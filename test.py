@@ -21,6 +21,12 @@ def test_make_holder():
     mv[1] = -99
 
     print([i for i in mv])
+    print(h[1])
+
+    try:
+        print(h[77])
+    except IndexError as e:
+        print(f"got expected exception: {e}")
 
 if __name__ == "__main__":
     test_add()

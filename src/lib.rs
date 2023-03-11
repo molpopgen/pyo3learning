@@ -1,5 +1,6 @@
 use std::os::raw::{c_int, c_void};
 
+use pyo3::exceptions::PyIndexError;
 use pyo3::ffi;
 use pyo3::prelude::*;
 
@@ -16,7 +17,7 @@ use pyo3::AsPyPointer;
 /// # Note:
 ///
 /// this is copied from the pyo3 test suite w/some minimal mods
-unsafe fn fill_view_from_readonly_data(
+unsafe fn fill_view_from_readwrite_data(
     view: *mut ffi::Py_buffer,
     flags: c_int,
     data: &[i32],
@@ -72,7 +73,7 @@ pub fn add(left: usize, right: usize) -> PyResult<usize> {
     Ok(left + right)
 }
 
-#[pyclass]
+#[pyclass(sequence)]
 struct HoldsVec {
     data: Vec<i32>,
 }
@@ -92,13 +93,21 @@ impl HoldsVec {
         self.data.len()
     }
 
+    fn __getitem__(&self, index: usize) -> PyResult<i32> {
+        if index >= self.data.len() {
+            Err(PyIndexError::new_err(format!("index {index} out of range")))
+        } else {
+            Ok(self.data[index])
+        }
+    }
+
     // copied from pyo3 tests
     unsafe fn __getbuffer__(
         slf: &PyCell<Self>,
         view: *mut ffi::Py_buffer,
         flags: c_int,
     ) -> PyResult<()> {
-        fill_view_from_readonly_data(view, flags, &slf.borrow().data, slf)
+        fill_view_from_readwrite_data(view, flags, &slf.borrow().data, slf)
     }
 
     // copied from pyo3 tests
