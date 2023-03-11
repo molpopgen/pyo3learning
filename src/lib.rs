@@ -163,5 +163,6 @@ impl HoldsVec {
 #[pymodule]
 fn pyo3learning(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<HoldsVec>()?;
+    m.add_class::<View>()?;
     Ok(())
 }
