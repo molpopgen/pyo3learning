@@ -10,6 +10,7 @@ def test_make_holder():
     h = pyo3learning.HoldsVec([1, 2, 3])
     # This is annoying: the repr_ns is 'builtins'
     print(h)
+    assert len(h) == 3
 
 
 if __name__ == "__main__":

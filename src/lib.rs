@@ -16,6 +16,10 @@ impl HoldsVec {
     fn new(data: Vec<i32>) -> Self {
         Self { data }
     }
+
+    fn __len__(&self) -> usize {
+        self.data.len()
+    }
 }
 
 #[pymodule]
