@@ -157,7 +157,7 @@ impl HoldsVec {
         drop(std::ffi::CString::from_raw((*view).format));
     }
 
-    fn view(self_: PyRef<'_, Self>, py: Python) -> PyResult<View> {
+    fn view(self_: PyRef<'_, Self>) -> PyResult<View> {
         Ok(View {
             data: self_.data.as_ptr(),
             len: self_.data.len(),
