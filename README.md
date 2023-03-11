@@ -7,6 +7,7 @@
 ```sh
 python3 -m venv venv
 sourvce venv/bin/activate
+python -m pip install -r requirements.txt
 ```
 
 2. Build the Python extension module
