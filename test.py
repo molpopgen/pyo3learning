@@ -1,3 +1,5 @@
+import numpy as np
+
 import pyo3learning
 
 
@@ -21,12 +23,24 @@ def test_make_holder():
     mv[1] = -99
 
     print([i for i in mv])
-    print(h[1])
+
+    assert mv[1] == -99
 
     try:
         print(h[77])
     except IndexError as e:
         print(f"got expected exception: {e}")
+
+    array = np.array(mv)
+    print(array)
+    print(array.dtype)
+    array[0] = 3
+    print(array)
+    print(h[0])
+    mv[0] = 7
+    print(h[0])
+    print(array)
+
 
 if __name__ == "__main__":
     test_add()
