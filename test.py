@@ -11,9 +11,16 @@ def test_make_holder():
     # This is annoying: the repr_ns is 'builtins'
     print(h)
     assert len(h) == 3
-    h.append(4)
+    h.append(77)
     assert len(h) == 4
 
+    mv = memoryview(h)
+
+    print([i for i in mv])
+
+    mv[1] = -99
+
+    print([i for i in mv])
 
 if __name__ == "__main__":
     test_add()
