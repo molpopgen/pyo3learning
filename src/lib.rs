@@ -112,6 +112,7 @@ impl HoldsVec {
 
     // copied from pyo3 tests
     unsafe fn __releasebuffer__(&self, view: *mut ffi::Py_buffer) {
+        assert!(!view.is_null());
         // Release memory held by the format string
         drop(std::ffi::CString::from_raw((*view).format));
     }
