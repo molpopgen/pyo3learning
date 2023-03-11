@@ -82,7 +82,7 @@ pub fn add(left: usize, right: usize) -> PyResult<usize> {
 struct View {
     data: *const i32,
     len: usize,
-    parent: Py<HoldsVec>,
+    _parent: Py<HoldsVec>,
 }
 
 #[pymethods]
@@ -161,7 +161,7 @@ impl HoldsVec {
         Ok(View {
             data: self_.data.as_ptr(),
             len: self_.data.len(),
-            parent: self_.into(),
+            _parent: self_.into(),
         })
     }
 }
