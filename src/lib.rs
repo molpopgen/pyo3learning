@@ -73,11 +73,6 @@ unsafe fn fill_view_from_readwrite_data(
     Ok(())
 }
 
-#[pyfunction]
-pub fn add(left: usize, right: usize) -> PyResult<usize> {
-    Ok(left + right)
-}
-
 #[pyclass(unsendable, sequence)]
 struct View {
     data: *const i32,
@@ -168,7 +163,6 @@ impl HoldsVec {
 
 #[pymodule]
 fn pyo3learning(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(add, m)?)?;
     m.add_class::<HoldsVec>()?;
     Ok(())
 }
