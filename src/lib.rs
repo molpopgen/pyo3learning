@@ -73,7 +73,7 @@ unsafe fn fill_view_from_readwrite_data(
     Ok(())
 }
 
-#[pyclass(unsendable, sequence)]
+#[pyclass(unsendable, sequence, module="pyo3learning")]
 struct View {
     data: *const i32,
     len: usize,
@@ -100,7 +100,7 @@ impl View {
     }
 }
 
-#[pyclass(sequence)]
+#[pyclass(sequence, module="pyo3learning")]
 struct HoldsVec {
     data: Vec<i32>,
 }
