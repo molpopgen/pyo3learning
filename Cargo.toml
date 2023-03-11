@@ -9,3 +9,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 =  {version = "0.18.1", features = ["extension-module"]}
+
+# Even in trivial packages like this,
+# we can shave a few MB off the library size
+# "fat" does even better here
+[profile.release]
+lto = "thin"
+codegen-units=1
