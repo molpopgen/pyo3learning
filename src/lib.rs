@@ -101,7 +101,6 @@ impl View {
 }
 
 #[pyclass(sequence)]
-#[derive(Clone)]
 struct HoldsVec {
     data: Vec<i32>,
 }
