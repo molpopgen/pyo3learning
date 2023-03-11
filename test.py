@@ -17,6 +17,7 @@ def test_make_holder():
     assert len(h) == 4
 
     mv = memoryview(h)
+    assert mv.readonly is False
 
     print([i for i in mv])
 
