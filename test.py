@@ -42,6 +42,13 @@ def test_make_holder():
     print(h[0])
     print(array)
 
+    v = memoryview(h.view())
+    v[3] = 101
+    print(f"view = {[i for i in v]}")
+    print(f"h = {[i for i in h]}")
+    del h
+    print(f"view = {[i for i in v]}")
+
 
 if __name__ == "__main__":
     test_add()

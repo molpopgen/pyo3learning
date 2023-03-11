@@ -20,11 +20,16 @@ use pyo3::AsPyPointer;
 unsafe fn fill_view_from_readwrite_data(
     view: *mut ffi::Py_buffer,
     flags: c_int,
-    data: &[i32],
+    //data: &[i32],
+    data: *const i32,
+    data_len: usize,
     owner: &PyAny,
 ) -> PyResult<()> {
     if view.is_null() {
         return Err(PyBufferError::new_err("View is null"));
+    }
+    if data.is_null() {
+        return Err(PyBufferError::new_err("data is null"));
     }
 
     if (flags & ffi::PyBUF_WRITABLE) == ffi::PyBUF_WRITABLE {
@@ -33,8 +38,8 @@ unsafe fn fill_view_from_readwrite_data(
 
     (*view).obj = ffi::_Py_NewRef(owner.as_ptr());
 
-    (*view).buf = data.as_ptr() as *mut c_void;
-    (*view).len = data.len() as isize;
+    (*view).buf = data as *mut c_void;
+    (*view).len = data_len as isize;
     (*view).readonly = 0;
 
     // This must be sizeof(T)
@@ -73,7 +78,35 @@ pub fn add(left: usize, right: usize) -> PyResult<usize> {
     Ok(left + right)
 }
 
+#[pyclass(unsendable, sequence)]
+struct View {
+    data: *const i32,
+    len: usize,
+    parent: Py<HoldsVec>,
+}
+
+#[pymethods]
+impl View {
+    // copied from pyo3 tests
+    unsafe fn __getbuffer__(
+        slf: &PyCell<Self>,
+        view: *mut ffi::Py_buffer,
+        flags: c_int,
+    ) -> PyResult<()> {
+        //fill_view_from_readwrite_data(view, flags, &slf.borrow().data, slf)
+        fill_view_from_readwrite_data(view, flags, slf.borrow().data, slf.borrow().len, slf)
+    }
+
+    // copied from pyo3 tests
+    unsafe fn __releasebuffer__(&self, view: *mut ffi::Py_buffer) {
+        assert!(!view.is_null());
+        // Release memory held by the format string
+        drop(std::ffi::CString::from_raw((*view).format));
+    }
+}
+
 #[pyclass(sequence)]
+#[derive(Clone)]
 struct HoldsVec {
     data: Vec<i32>,
 }
@@ -107,7 +140,14 @@ impl HoldsVec {
         view: *mut ffi::Py_buffer,
         flags: c_int,
     ) -> PyResult<()> {
-        fill_view_from_readwrite_data(view, flags, &slf.borrow().data, slf)
+        //fill_view_from_readwrite_data(view, flags, &slf.borrow().data, slf)
+        fill_view_from_readwrite_data(
+            view,
+            flags,
+            slf.borrow().data.as_ptr(),
+            slf.borrow().__len__(),
+            slf,
+        )
     }
 
     // copied from pyo3 tests
@@ -115,6 +155,14 @@ impl HoldsVec {
         assert!(!view.is_null());
         // Release memory held by the format string
         drop(std::ffi::CString::from_raw((*view).format));
+    }
+
+    fn view(self_: PyRef<'_, Self>, py: Python) -> PyResult<View> {
+        Ok(View {
+            data: self_.data.as_ptr(),
+            len: self_.data.len(),
+            parent: self_.into(),
+        })
     }
 }
 
