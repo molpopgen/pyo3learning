@@ -11,6 +11,8 @@ def test_make_holder():
     # This is annoying: the repr_ns is 'builtins'
     print(h)
     assert len(h) == 3
+    h.append(4)
+    assert len(h) == 4
 
 
 if __name__ == "__main__":

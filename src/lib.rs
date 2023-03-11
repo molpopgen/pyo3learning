@@ -17,6 +17,10 @@ impl HoldsVec {
         Self { data }
     }
 
+    fn append(&mut self, value: i32) {
+        self.data.push(value);
+    }
+
     fn __len__(&self) -> usize {
         self.data.len()
     }
